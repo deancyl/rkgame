@@ -1,0 +1,82 @@
+﻿# TreeFrog-UI R36SX v2.7 越狱部署指南
+
+## 📋 当前状态
+
+✅ **已完成**:
+- jailbreak.c 源码已准备好
+- jailbreak.sh 脚本已准备好（UNIX LF 格式）
+- 越狱逻辑已验证
+
+❌ **待完成**:
+- 编译 libemu_jailbreak.so（需要 MIPS 交叉编译器）
+
+---
+
+## 🚀 编译方案（三选一）
+
+### 方案 1: 在线编译器（最简单）
+
+1. 访问: https://godbolt.org/
+2. 选择编译器: mipsel-linux-gnu-gcc
+3. 粘贴 jailbreak.c 代码
+4. 添加编译选项: -shared -fPIC -march=mips32r2 -O2
+5. 编译并下载 .so 文件
+
+### 方案 2: Docker Desktop（推荐）
+
+1. 下载: https://www.docker.com/products/docker-desktop
+2. 安装并重启电脑
+3. 运行命令:
+
+docker run --rm -v D:\opencode\rootfs2:/work ubuntu:22.04 bash -c "apt-get update && apt-get install -y gcc-mipsel-linux-gnu libc6-dev-mipsel-cross && mipsel-linux-gnu-gcc -shared -fPIC -march=mips32r2 -O2 -o /work/libemu_jailbreak.so /work/jailbreak.c"
+
+### 方案 3: 社区求助
+
+- GitHub: https://github.com/tzubertowski/treefrog-ui/issues
+- 提供源码请求社区帮忙编译
+
+---
+
+## 📦 部署步骤
+
+1. 复制 libemu_jailbreak.so 到 I:\cubegm\cores\libemu_pce.so
+2. 复制 jailbreak.sh 到 I:\cubegm\jailbreak.sh
+3. 确保所有文件存在（见下方清单）
+4. 插卡开机
+5. 进入 PCE 文件夹
+6. 点击 Start_TreeFrog.pce
+
+---
+
+## ✅ 文件清单
+
+I:\cubegm\picoarch (377KB)
+I:\cubegm\picoarch_hi (377KB)
+I:\cubegm\cores\frogui_libretro.so (261KB)
+I:\cubegm\cores\libemu_pce.so (越狱木马)
+I:\cubegm\jailbreak.sh (UNIX LF 格式)
+I:\cubegm\driver.so (加密版 - 71 FB F0 7E 开头)
+I:\frogui\fonts\SimsunExtG.ttf (中文字体)
+I:\frogui\settings.txt (font=SimsunExtG)
+I:\PCE\Start_TreeFrog.pce (触发器)
+
+---
+
+## 🔍 验证方法
+
+开机后检查 TF 卡根目录:
+- jailbreak.log - 越狱脚本执行日志
+
+如果失败:
+1. 检查 driver.so 是否为加密版
+2. 检查脚本换行符是否为 LF
+3. 检查文件路径是否正确
+
+---
+
+## ⚠️ 注意事项
+
+1. **driver.so 必须是加密版**（71 FB F0 7E 开头）
+2. **所有脚本必须是 UNIX LF 格式**
+3. **不要修改 icube 和 icube_start.sh**（它们是死代码）
+4. **保留原厂备份**以防万一
