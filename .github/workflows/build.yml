@@ -1,0 +1,35 @@
+name: MIPS 74Kc Cross-Compile Jailbreak Trojan
+
+on:
+  push:
+    branches: [ "main" ]  # 每次你向 main 分支提交代码时，自动触发编译
+  workflow_dispatch:      # 允许你在 GitHub 网页上手动点击按钮触发编译
+
+jobs:
+  build-mips:
+    runs-on: ubuntu-22.04  # 使用稳定的 Ubuntu 22.04 云服务器
+
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+
+    - name: Install MIPS Cross-Compiler Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-mipsel-linux-gnu libc6-dev-mipsel-cross
+
+    - name: Compile libemu_jailbreak.so (MIPS 74Kc)
+      run: |
+        mipsel-linux-gnu-gcc -shared -fPIC \
+          -march=mips32r2 \
+          -mtune=74kc \
+          -O2 \
+          -o libemu_jailbreak.so \
+          jailbreak.c
+
+    - name: Upload libemu_jailbreak.so as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: libemu_jailbreak
+        path: libemu_jailbreak.so
+        retention-days: 7  # 编译出的文件在网页端保存 7 天
